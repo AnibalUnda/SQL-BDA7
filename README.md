@@ -12,7 +12,7 @@ Registrar indicadores por analista origen (que colocó el crédito) de la carter
 Detectar desviaciones respecto a la meta de los indicadores
 
 ### Entidades
-Para la segunda tarea (diseño lógico) se pondrá las variables a utilizar en las tablas.
+En el diseño lógico y físico se puede conocer las variables de cada tabla mencionada:
 ##### Agencia
 ##### Gerente de Agencia
 ##### Fecha
@@ -22,7 +22,7 @@ Para la segunda tarea (diseño lógico) se pondrá las variables a utilizar en l
 ##### Analista Responsable
 ##### Desviación Indicador
 
-
+Respecto al Script de la creación de la base de datos en SQL, se encuentra en la carpeta DATA BASE
 ## Diagrama Entidad Relación
 ![E_R](https://github.com/user-attachments/assets/dc05d7ee-86f2-4b0c-bb32-6162f4c15e2e)
 
