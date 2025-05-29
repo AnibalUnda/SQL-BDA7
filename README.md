@@ -26,3 +26,8 @@ Para la segunda tarea (diseño lógico) se pondrá las variables a utilizar en l
 ## Diagrama Entidad Relación
 ![E_R](https://github.com/user-attachments/assets/dc05d7ee-86f2-4b0c-bb32-6162f4c15e2e)
 
+## Diseño Lógico
+![image](https://github.com/user-attachments/assets/2abaec96-b7f5-45c9-9596-e1825d1e9d37)
+
+## Diseño Físico
+![image](https://github.com/user-attachments/assets/8d17dca0-129b-45dd-aaf7-7a60e1181276)
