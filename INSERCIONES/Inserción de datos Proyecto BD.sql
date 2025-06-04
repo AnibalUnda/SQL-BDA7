@@ -4,11 +4,11 @@ go
 -- Insertadmos datos de la tabla 'analista_responsable'
 
 insert into analista_responsable (cod_analista_origen, 
-									cod_analista_actual, 
-									categoria_analista_origen,
-									categoria_analista_actual, 
-									nombre_analista_actual, 
-									nombre_analista_origen)
+				cod_analista_actual, 
+				categoria_analista_origen,
+				categoria_analista_actual, 
+				nombre_analista_actual, 
+				nombre_analista_origen)
 values 
 ('A0000001','A0000101','Junior','Senior','Luis Pérez','Carlos Gómez'),
 ('A0000002','A0000102','Junior','Semi-Senior','Ana Torres','Juan León'),
