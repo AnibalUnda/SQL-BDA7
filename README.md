@@ -31,3 +31,7 @@ Respecto al Script de la creación de la base de datos en SQL, se encuentra en l
 
 ## Diseño Físico
 ![image](https://github.com/user-attachments/assets/8d17dca0-129b-45dd-aaf7-7a60e1181276)
+
+## Tarea 3
+
+Como parte de la tarea 3 se agregó el script con la inserción de datos con 16 registros en las tablas independientes y transaccionales.
