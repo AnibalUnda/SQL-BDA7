@@ -1,0 +1,154 @@
+USE bd_proyecto_indicadores_financieros
+GO
+
+-- Consultar créditos morosos por departamento
+SELECT 
+	ag.departamento as departamento, 
+	count(*) as cantidad_morosos
+FROM creditos c
+	LEFT JOIN agencia ag ON c.agencia_id = ag.id
+WHERE
+	c.estado_credito = 'Moroso'
+GROUP BY
+	ag.departamento
+
+
+-- Consultar indicadores con desviación menor al 5%
+
+SELECT
+	di.id,
+	i.nombre_indicador,
+	idsf.valor_real,
+	idsf.valor_meta,
+	di.diferencia_porcentual
+FROM desviaciones_indicador di
+	LEFT JOIN indicador_diario_sf idsf ON di.indicador_diario_sf_id = idsf.id
+	LEFT JOIN indicador i ON idsf.indicador_id = i.id
+WHERE
+	di.diferencia_porcentual <5;
+
+-- Consultar total de créditos otorgados por región
+SELECT 
+	a.region,
+	sum(c.saldo_otorgado) as Total_Saldo_Otorgado
+FROM creditos c
+	LEFT JOIN agencia a on c.agencia_id = a.id
+GROUP BY
+	a.region;
+
+-- Vista de desempeño de indicadores diarios con metas y desviaciones
+CREATE VIEW vw_indicadores_desempeno AS
+SELECT
+  i.nombre_indicador,
+  a.nombre AS agencia,
+  f.fecha_reporte,
+  idsf.valor_meta,
+  idsf.valor_real,
+  abs(idsf.valor_real - idsf.valor_meta) AS diferencia_absoluta,
+  CASE 
+    WHEN idsf.valor_meta = 0 THEN 0
+    ELSE abs(idsf.valor_real - idsf.valor_meta) / idsf.valor_meta * 100
+  END AS diferencia_porcentual
+FROM indicador_diario_sf idsf
+LEFT JOIN agencia a ON idsf.agencia_id = a.id
+LEFT JOIN fecha f ON idsf.fecha_id = f.id
+LEFT JOIN indicador i ON idsf.indicador_id = i.id;
+
+select * from [dbo].[vw_indicadores_desempeno]
+
+
+-- Vista de créditos activos con analistas responsables
+CREATE VIEW vw_creditos_analista AS
+SELECT 
+  c.titular,
+  c.saldo_capital,
+  ar.nombre_analista_actual,
+  ar.categoria_analista_actual,
+  ag.nombre AS agencia
+FROM creditos c
+LEFT JOIN sistema_fuente sf ON c.id = sf.creditos_id
+LEFT JOIN analista_responsable ar ON sf.analista_responsable_id = ar.id
+LEFT JOIN agencia ag ON c.agencia_id = ag.id
+WHERE c.estado_credito = 'Activo';
+
+SELECT * FROM dbo.vw_creditos_analista
+
+-- Vista de gerente de agencia activo y fecha de inicio
+
+CREATE VIEW vw_gerentes_activos AS
+SELECT  
+  a.nombre AS agencia,
+  g.nombre_gerente,
+  g.fecha_inicio
+FROM gerente_agencia g
+LEFT JOIN agencia a ON g.agencia_id = a.id
+WHERE g.fecha_cese IS NULL;
+
+SELECT * FROM dbo.vw_gerentes_activos
+
+-- Procedimiento almacenado de insertar un nuevo crédito 
+CREATE PROCEDURE sp_insertar_credito
+  @titular VARCHAR(100),
+  @agencia_id INT,
+  @saldo_capital DECIMAL(9,2),
+  @estado_credito VARCHAR(100),
+  @saldo_otorgado DECIMAL(9,2)
+AS
+BEGIN
+  INSERT INTO creditos (titular, agencia_id, saldo_capital, estado_credito, saldo_otorgado)
+  VALUES (@titular, @agencia_id, @saldo_capital, @estado_credito, @saldo_otorgado);
+END;
+
+EXEC dbo.sp_insertar_credito 'Jhenss Chavez',3,1650,'Moroso',20000
+
+-- Procedimiento almacenado para obtener desviaciones por indicador
+SELECT * FROM indicador_diario_sf
+CREATE PROCEDURE sp_desviaciones_por_indicador
+  @nombre_indicador VARCHAR(100)
+AS
+BEGIN
+  SELECT
+    i.nombre_indicador,
+    a.nombre AS agencia,
+    idsf.valor_meta,
+    idsf.valor_real,
+    di.diferencia_porcentual
+  FROM desviaciones_indicador di
+  LEFT JOIN indicador_diario_sf idsf ON di.indicador_diario_sf_id = idsf.id
+  LEFT JOIN indicador i ON idsf.indicador_id = i.id
+  LEFT JOIN agencia a ON idsf.agencia_id = a.id
+  WHERE i.nombre_indicador = @nombre_indicador;
+END;
+
+EXEC dbo.sp_desviaciones_por_indicador 'Mora Crediticia'
+
+
+
+-- Función escalar para devolver el porcentaje de desviación
+
+CREATE FUNCTION fn_porcentaje_desviacion (
+  @valor_meta DECIMAL(9,2),
+  @valor_real DECIMAL(9,2)
+)
+RETURNS DECIMAL(9,2)
+AS
+BEGIN
+  DECLARE @resultado DECIMAL(9,2);
+  IF @valor_meta = 0
+    SET @resultado = 0;
+  ELSE
+    SET @resultado = abs(@valor_real - @valor_meta) / @valor_meta * 100;
+  RETURN @resultado;
+END;
+
+select dbo.fn_porcentaje_desviacion (50,55)
+
+-- Consulta para ver el gerente de agencia, la agencia y el promedio de saldo por agencia
+SELECT 
+  a.nombre AS agencia,
+  g.nombre_gerente,
+  AVG(c.saldo_capital) AS saldo_promedio
+FROM agencia a
+LEFT JOIN gerente_agencia g ON a.id = g.agencia_id
+LEFT JOIN creditos c ON a.id = c.agencia_id
+GROUP BY a.nombre, g.nombre_gerente;
