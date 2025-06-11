@@ -35,3 +35,7 @@ Respecto al Script de la creación de la base de datos en SQL, se encuentra en l
 ## Tarea 3
 
 Como parte de la tarea 3 se agregó el script con la inserción de datos con 16 registros en las tablas independientes y transaccionales.
+
+## Trabajo Final
+
+Como parte del trabajo final se agregó el script con las consultas creadas y el documento fue entregadoo por Classroom
